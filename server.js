@@ -14,6 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const authRouter = require('./app/routes/authentification.route');
 const userRouter = require('./app/routes/user.route');
+const postRouter = require('./app/routes/post.route');
 
 app.use(cors());
 
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/authentification/', authRouter);
 app.use('/api/user/', userRouter);
+app.use('/api/post/', postRouter);
 
 const PORT = 3000;
 
