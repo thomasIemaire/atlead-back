@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const db = require("../middlewares/db");
 const authentification = require("../middlewares/authentification");
 const postService = require('../services/post.service');
 
-router.get('/advice', [authentification.verifyToken], async (req, res, next) => {
+router.get('/advice', [authentification.verifyToken, db.verifyDb], async (req, res, next) => {
     try {
-        const connection = req.app.locals.db;
+        const connection = req.connection;
         const advices = await postService.getAllAdvices(req.rowid, connection);
 
         if (!advices) res.status(404).send({ message: 'Aucun conseil trouvé!' });
@@ -15,9 +16,9 @@ router.get('/advice', [authentification.verifyToken], async (req, res, next) => 
     }
 });
 
-router.get('/advice/:identifiant', [authentification.verifyToken], async (req, res, next) => {
+router.get('/advice/:identifiant', [authentification.verifyToken, db.verifyDb], async (req, res, next) => {
     try {
-        const connection = req.app.locals.db;
+        const connection = req.connection;
         const identifiant = req.params.identifiant;
         const advices = await postService.getUserAdvices(req.rowid, identifiant, connection);
 
@@ -28,9 +29,9 @@ router.get('/advice/:identifiant', [authentification.verifyToken], async (req, r
     }
 });
 
-router.post('/advice', [authentification.verifyToken], async (req, res, next) => {
+router.post('/advice', [authentification.verifyToken, db.verifyDb], async (req, res, next) => {
     try {
-        const connection = req.app.locals.db;
+        const connection = req.connection;
         const { advice } = req.body;
         const datetime = new Date();
         const message = await postService.setAdvice(req.rowid, advice, datetime, connection);
@@ -42,9 +43,9 @@ router.post('/advice', [authentification.verifyToken], async (req, res, next) =>
     }
 });
 
-router.post('/advice/like', [authentification.verifyToken], async (req, res, next) => {
+router.post('/advice/like', [authentification.verifyToken, db.verifyDb], async (req, res, next) => {
     try {
-        const connection = req.app.locals.db;
+        const connection = req.connection;
         const { idAdvice } = req.body;
         const message = await postService.setLikeOnAdvice(req.rowid, idAdvice, connection);
 
@@ -55,9 +56,9 @@ router.post('/advice/like', [authentification.verifyToken], async (req, res, nex
     }
 });
 
-router.post('/advice/unlike', [authentification.verifyToken], async (req, res, next) => {
+router.post('/advice/unlike', [authentification.verifyToken, db.verifyDb], async (req, res, next) => {
     try {
-        const connection = req.app.locals.db;
+        const connection = req.connection;
         const { idAdvice } = req.body;
         const message = await postService.removeLikeOnAdvice(req.rowid, idAdvice, connection);
 

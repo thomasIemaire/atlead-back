@@ -3,8 +3,6 @@ const cors = require("cors");
 const bodyParser = require('body-parser');
 const path = require('path');
 
-const db = require('./app/services/db.service');
-
 global.__basedir = __dirname;
 
 const app = express();
@@ -30,19 +28,6 @@ app.use('/api/post/', postRouter);
 
 const PORT = 3000;
 
-async function startServer() {
-    try {
-        const connection = await db.createConnection();
-        
-        app.locals.db = connection;
-
-        app.listen(PORT, () => {
-            console.log(`Server is running on: http://localhost:${PORT}/`);
-        });
-    } catch (error) {
-        console.error('Error starting server:', error);
-        process.exit(1);
-    }
-}
-
-startServer();
+app.listen(PORT, () => {
+    console.log(`Server is running on: http://localhost:${PORT}/`);
+});

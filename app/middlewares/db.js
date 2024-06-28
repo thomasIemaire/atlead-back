@@ -1,10 +1,10 @@
 const mysql = require('mysql2/promise');
 const config = require('../config/db.config.js');
 
-const env = process.env.NODE_ENV || 'dev';
+const env = process.env.NODE_ENV || 'prod';
 const dbConfig = config[env];
 
-async function createConnection() {
+const createConnection = async () => {
     try {
         const connection = await mysql.createConnection({
             host: dbConfig.host,
@@ -20,6 +20,20 @@ async function createConnection() {
     }
 }
 
-module.exports = {
-    createConnection
+const verifyDb = async (req, res, next) => {
+    try {
+        if (!req.connection.state || req.connection.state === 'disconnected')
+            req.connection = await createConnection();
+
+        next();
+    } catch (error) {
+        console.error('Error verifying the database connection:', error);
+        res.status(500).send('Database connection error');
+    }
+}
+
+const dbConnect = {
+    verifyDb: verifyDb
 };
+
+module.exports = dbConnect;

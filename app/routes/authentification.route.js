@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const config = require("../config/authentification.config");
+const db = require("../middlewares/db");
 const authentification = require("../middlewares/authentification");
 const authentificationService = require('../services/authentification.service');
 var jwt = require("jsonwebtoken");
@@ -26,9 +27,9 @@ router.get('/refresh', [authentification.verifyToken], async (req, res, next) =>
     }
 });
 
-router.post('/signin', async (req, res, next) => {
+router.post('/signin', [db.verifyDb], async (req, res, next) => {
     try {
-        const connection = req.app.locals.db;
+        const connection = req.connection;
         const { identifiant, password } = req.body;
         let user = await authentificationService.getUserByCredentials(identifiant, password, connection);
 
@@ -47,9 +48,9 @@ router.post('/signin', async (req, res, next) => {
     }
 });
 
-router.post('/signup', async (req, res, next) => {
+router.post('/signup', [db.verifyDb], async (req, res, next) => {
     try {
-        const connection = req.app.locals.db;
+        const connection = req.connection;
         const { identifiant, username, email, password } = req.body;
         let user = await authentificationService.setUserByCredentials(identifiant, username, email, password, connection);
 
